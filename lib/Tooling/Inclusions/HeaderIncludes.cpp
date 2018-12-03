@@ -154,7 +154,7 @@ IncludeCategoryManager::IncludeCategoryManager(const IncludeStyle &Style,
     : Style(Style), FileName(FileName) {
   FileStem = llvm::sys::path::stem(FileName);
   for (const auto &Category : Style.IncludeCategories)
-    CategoryRegexs.emplace_back(Category.Regex, llvm::Regex::IgnoreCase);
+	CategoryRegexs.emplace_back(Category.Regex, llvm::Regex::NoFlags);
   IsMainFile = FileName.endswith(".c") || FileName.endswith(".cc") ||
                FileName.endswith(".cpp") || FileName.endswith(".c++") ||
                FileName.endswith(".cxx") || FileName.endswith(".m") ||
@@ -179,8 +179,7 @@ bool IncludeCategoryManager::isMainHeader(StringRef IncludeName) const {
     return false;
   StringRef HeaderStem =
       llvm::sys::path::stem(IncludeName.drop_front(1).drop_back(1));
-  if (FileStem.startswith(HeaderStem) ||
-      FileStem.startswith_lower(HeaderStem)) {
+  if (FileStem.startswith(HeaderStem)) {
     llvm::Regex MainIncludeRegex(HeaderStem.str() + Style.IncludeIsMainRegex,
                                  llvm::Regex::IgnoreCase);
     if (MainIncludeRegex.match(FileStem))
